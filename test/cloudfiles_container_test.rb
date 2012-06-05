@@ -95,7 +95,7 @@ class CloudfilesContainerTest < Test::Unit::TestCase
     CloudFiles::Container.any_instance.stubs(:post_with_headers).returns(nil)
     @container = CloudFiles::Container.new(connection, 'test_container')
     assert_nothing_raised do
-      @container.make_public(123)
+      @container.make_public(:ttl => 123)
     end
   end
   
@@ -483,20 +483,6 @@ class CloudfilesContainerTest < Test::Unit::TestCase
     SwiftClient.stubs(:head_container).returns({'x-container-bytes-used' => '0','x-container-object-count' => '10', 'x-cdn-uri' => 'http://cdn.test.example/container', "x-cdn-enabled" => 'True'})
     @container = CloudFiles::Container.new(connection, "test_container")    
     assert_equal @container.cdn_url, 'http://cdn.test.example/container'
-  end
-  
-  def test_user_agent_acl
-    connection = stub(:storagehost => 'test.storage.example', :storagepath => '/dummy/path', :storageport => 443, :storagescheme => 'https', :cdnmgmthost => 'cdm.test.example', :cdnmgmtpath => '/dummy/path', :cdnmgmtport => 443, :cdnmgmtscheme => 'https', :cdn_available? => true, :cdnurl => 'http://foo.test.example/container', :storageurl => 'http://foo.test.example/container', :authtoken => "dummy token")
-    SwiftClient.stubs(:head_container).returns({'x-container-bytes-used' => '0','x-container-object-count' => '10', 'x-user-agent-acl' => nil})
-    @container = CloudFiles::Container.new(connection, "test_container")    
-    assert_equal @container.user_agent_acl, nil  
-  end
-  
-  def test_referrer_agent
-    connection = stub(:storagehost => 'test.storage.example', :storagepath => '/dummy/path', :storageport => 443, :storagescheme => 'https', :cdnmgmthost => 'cdm.test.example', :cdnmgmtpath => '/dummy/path', :cdnmgmtport => 443, :cdnmgmtscheme => 'https', :cdn_available? => true, :cdnurl => 'http://foo.test.example/container', :storageurl => 'http://foo.test.example/container', :authtoken => "dummy token")
-    SwiftClient.stubs(:head_container).returns({'x-container-bytes-used' => '0','x-container-object-count' => '10', 'x-referrer-acl' => nil})
-    @container = CloudFiles::Container.new(connection, "test_container")    
-    assert_equal @container.referrer_acl, nil      
   end
   
   def test_metadata

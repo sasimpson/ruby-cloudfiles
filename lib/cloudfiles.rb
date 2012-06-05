@@ -28,6 +28,7 @@ module CloudFiles
   require 'cgi'
   require 'uri'
   require 'digest/md5'
+  require 'date'
   require 'time'
   require 'rubygems'
 
@@ -49,11 +50,8 @@ module CloudFiles
     (str.respond_to?(:lines) ? str.lines : str).to_a.map { |x| x.chomp }
   end
 
-  # CGI.escape, but without special treatment on spaces
-  def self.escape(str,extra_exclude_chars = '')
-    str.gsub(/([^a-zA-Z0-9_.-#{extra_exclude_chars}]+)/) do
-      '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
-    end
+  def self.escape(str)
+    URI.encode(str)
   end
 end
 
